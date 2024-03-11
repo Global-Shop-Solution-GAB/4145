@@ -1,0 +1,542 @@
+Program.Sub.ScreenSU.Start
+Gui.Form..Create
+Gui.Form..Caption("PO Req Approval")
+Gui.Form..Size(8700,5295)
+Gui.Form..MinX(0)
+Gui.Form..MinY(0)
+Gui.Form..Position(0,0)
+Gui.Form..BackColor(-2147483633)
+Gui.Form..MousePointer(0)
+Gui.Form..Event(UnLoad,Form_UnLoad)
+Gui.Form.GsG.Create(GsGridControl)
+Gui.Form.GsG.Size(8580,4485)
+Gui.Form.GsG.Position(30,15)
+Gui.Form.GsG.Event(RowClick,GsG_RowClick)
+Gui.Form.cmdView.Create(Button)
+Gui.Form.cmdView.Size(975,375)
+Gui.Form.cmdView.Position(165,4545)
+Gui.Form.cmdView.Caption("View")
+Gui.Form.cmdView.Event(Click,cmdView_Click)
+Gui.Form.cmdApprove.Create(Button)
+Gui.Form.cmdApprove.Size(960,375)
+Gui.Form.cmdApprove.Position(6165,4560)
+Gui.Form.cmdApprove.Caption("Approve")
+Gui.Form.cmdApprove.Event(Click,cmdApprove_Click)
+Gui.Form.cmdDeny.Create(Button)
+Gui.Form.cmdDeny.Size(945,375)
+Gui.Form.cmdDeny.Position(7350,4560)
+Gui.Form.cmdDeny.Caption("Deny")
+Gui.Form.cmdDeny.Event(Click,cmdDeny_Click)
+Gui.Form2..Create
+Gui.Form2..Caption("Choose Receiver")
+Gui.Form2..Size(4470,1830)
+Gui.Form2..MinX(0)
+Gui.Form2..MinY(0)
+Gui.Form2..Position(0,0)
+Gui.Form2..BackColor(-2147483633)
+Gui.Form2..MousePointer(0)
+Gui.Form2..Event(UnLoad,Form2_UnLoad)
+Gui.Form2.ddlReceiver.Create(DropDownList)
+Gui.Form2.ddlReceiver.Size(2370,330)
+Gui.Form2.ddlReceiver.Position(150,705)
+Gui.Form2.cmdSaveRec.Create(Button)
+Gui.Form2.cmdSaveRec.Size(855,375)
+Gui.Form2.cmdSaveRec.Position(2820,675)
+Gui.Form2.cmdSaveRec.Caption("Save")
+Gui.Form2.cmdSaveRec.Event(Click,cmdSaveRec_Click)
+Gui.Form2.lbl1.Create(Label,"Choose Receiver For PO Rec #: ",True,2640,255,0,135,300,True,0,"Arial",8,-986896,0)
+Gui.Form2.txt1.Create(TextBox,"",True,1290,300,0,2625,255,False,0,"Arial",8,-2147483643,1)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+V.Global.iRow.Declare(Long, -1)
+V.Global.sStr.Declare(String)
+V.Global.iMain.Declare(Long, -1)
+V.Global.sNextTier.Declare(String)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+
+F.ODBC.Connection!Conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,1800)
+F.Intrinsic.Control.CallSub(populate)
+
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.GsG_RowClick.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+V.Global.iRow.Set(V.Args.RowIndex)
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.GsG_RowClick.End
+
+Program.Sub.Form_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("Populate_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+'close the form
+gui.Form..Visible(false)
+
+'close the connection
+F.ODBC.Connection!conx.Close
+'close datatable
+Function.Data.DataTable.Close("Head")
+
+'end the program
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Populate_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Form_UnLoad.End
+
+Program.Sub.cmdDeny_Click.Start
+F.Intrinsic.Control.SetErrorHandler("GsG_RowClick_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+V.Local.sReq.Declare(String)
+V.Local.ssql.Declare(String)
+V.Local.sTier.Declare(String)
+V.Local.sCreator.Declare(String)
+V.Local.fAmt.Declare(String)
+V.Local.sReqPO.Declare(String)
+V.Local.sApproved.Declare(String)
+V.Local.sEmail.Declare(String)
+V.Local.iUserId.Declare(Long)
+V.Local.susername.Declare(String)
+V.local.ssenderemail.Declare(String)
+V.Local.sSubject.Declare(String)
+V.local.sBody.Declare(String)
+
+
+Function.Intrinsic.Control.If(V.Global.iRow, >, -1)
+	'update the table 
+	'update the table APPROVED to "D"
+	Function.Data.DataTable.SetValue("Head", V.Global.iRow, "APPROVED", "D")
+
+	'save to db
+	F.Intrinsic.Control.CallSub(cmdsave_click)
+	'send email
+	V.Local.sReq.Set(V.DataTable.Head(V.Global.iRow).REQ_APP_ID!FieldValTrim)
+
+	F.Intrinsic.String.Build("Select REQUISITION_NO, REQ_CREATOR, AMT,DIVISION_ID, TIER_PENDING From GCG_4145_PO_REQ_PEND Where REQ_APP_ID = '{0}'", V.Local.sReq, V.Local.ssql)
+	F.ODBC.Connection!Conx.OpenLocalRecordsetRO("rst", V.Local.ssql)
+	V.Local.sTier.Set(v.ODBC.Conx!rst.FieldValTrim!TIER_PENDING)
+	V.Local.sCreator.Set(v.ODBC.Conx!rst.FieldValTrim!REQ_CREATOR)
+	V.Local.fAmt.Set(v.ODBC.Conx!rst.FieldValTrim!AMT)
+	V.Local.sReqPO.Set(v.ODBC.Conx!rst.FieldValTrim!REQUISITION_NO)
+	V.Local.sApproved.Set("Denied")
+	F.Global.Security.GetUserEmail(v.Local.screator.Trim,V.Local.sEmail)
+	'get the user ID
+	F.Global.Security.getuserid(v.Caller.User,v.Caller.CompanyCode,V.Local.iUserId)
+	F.Global.Security.GetFullName(v.Caller.CompanyCode,V.Local.susername)
+	F.Global.Security.getuseremail(v.caller.user,V.local.ssenderemail)
+	'set the subject
+	F.Intrinsic.String.Build("PO Requisition #{0} is {1}",V.Local.sReq,v.Local.sapproved.Trim,V.Local.sSubject)
+	'set the body
+	F.Intrinsic.String.Build("PO Requisition #{0}, Creator: {1}, Total Amount: ${2}, Division: {3}, Tier: {4}",V.Local.sReq,v.Local.sCreator.Trim,v.ODBC.Conx!rst.FieldValTrim!AMT,v.ODBC.Conx!rst.FieldValTrim!DIVISION_ID,V.Local.sTier.Trim,v.Local.sBody)
+	'get the email
+	F.Global.Messaging.queuemessage(v.Caller.CompanyCode,v.Local.iuserid.Trim,v.Caller.Caller,V.Local.sSubject,v.local.ssenderemail.Trim,v.local.semail.Trim,V.local.sBody)	
+	F.ODBC.Conx!rst.Close
+	'refresh table
+	F.Intrinsic.Control.CallSub(populate)
+	V.Global.iRow.Set(-1)
+Function.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox("Choose a Row")
+	V.Global.iRow.Set(-1)
+	F.Intrinsic.Control.Exitsub
+Function.Intrinsic.Control.EndIf
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("GsG_RowClick_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdDeny_Click.End
+
+Program.Sub.cmdApprove_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdDeny_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+V.Local.sDivision.Declare
+V.Local.sReq.Declare(String)
+V.Local.sReqNo.Declare(String)
+V.Local.sTier.Declare(String)
+V.Local.sType.Declare
+V.Local.fAmt.Declare(String)
+Function.Intrinsic.Control.If(V.Global.iRow, >, -1)
+	'update the table 
+	'update the table APPROVED to "A"
+	Function.Data.DataTable.SetValue("Head", V.Global.iRow, "APPROVED", "A")
+
+	'save to db
+	F.Intrinsic.Control.CallSub(cmdsave_click)
+	' call a subroutine for ddl
+	V.Local.fAmt.Set(V.DataTable.Head(V.Global.iRow).AMT!FieldValTrim)
+	V.Local.sTier.Set(V.DataTable.Head(V.Global.iRow).TIER_PENDING!FieldValTrim)
+	V.Local.sReq.Set(V.DataTable.Head(V.Global.iRow).REQ_APP_ID!FieldValTrim)
+	V.Local.sDivision.Set(V.DataTable.Head(V.Global.iRow).DIVISION_ID!FieldValTrim)
+	V.Local.sType.Set(V.DataTable.Head(V.Global.iRow).TYPE_ID!FieldValTrim)
+	V.Local.sReqNo.Set(V.DataTable.Head(V.Global.iRow).Requisition_No!FieldValTrim)
+	F.Intrinsic.Control.CallSub(poprec,"fAmt" ,V.Local.fAmt,"sTier",V.Local.sTier, "sReq", V.Local.sReq,"sReqNo",V.Local.sReqNo,"sDivision",V.Local.sDivision,"sType",V.Local.sType)
+Function.Intrinsic.Control.Else
+	F.Intrinsic.UI.Msgbox("Choose a Row")
+	F.Intrinsic.Control.Exitsub
+Function.Intrinsic.Control.EndIf
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdDeny_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdApprove_Click.End
+
+Program.Sub.cmdView_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdApprove_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+V.Local.iReturn.Declare(long)
+'this is to view the PO Req
+'Function.Intrinsic.Control.If(V.Global.iRow, >, -1)
+F.Global.General.LaunchMenuTask(272,0,v.Local.iReturn)
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdApprove_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdView_Click.End
+
+Program.Sub.cmdSave_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdView_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'save to database
+Function.Data.DataTable.SaveToDB("Head", "conx", "GCG_4145_PO_REQ_PEND","REQ_APP_ID", 7)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdView_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdSave_Click.End
+
+Program.Sub.Form2_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("cmdSave_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+F.Intrinsic.UI.Msgbox("Save Selection")
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdSave_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Form2_UnLoad.End
+
+Program.Sub.Populate.Start
+F.Intrinsic.Control.SetErrorHandler("Populate_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+V.Local.ssql.Declare(String)
+
+Function.Intrinsic.Control.If(V.Global.iMain, <> ,-1)
+'then close the table first
+	F.Data.DataTable.Close("Head")
+Function.Intrinsic.Control.EndIf
+
+
+F.Intrinsic.String.Build("Select * From GCG_4145_PO_REQ_PEND Where RECEIVER  = '{0}' And APPROVED = 'P'",V.Caller.User,V.Local.ssql)
+F.Data.DataTable.CreateFromSql("Head","conx",V.Local.ssql,True)
+F.Data.DataView.Create("Head","HeadView")
+Gui.Form.GsG.AddGridViewFromDataTable("GridHead","Head")
+'not visible
+GUI.Form.GsG.SetColumnProperty("GridHead", "Comments", "Visible", False)
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQ_APP_ID", "Visible", False)
+GUI.Form.GsG.SetColumnProperty("GridHead", "APPROVED", "Visible", False)
+GUI.Form.GsG.SetColumnProperty("GridHead", "RECEIVER", "Visible", False)
+GUI.Form.GsG.SetColumnProperty("GridHead", "DATE_LAST_ACTION", "Visible", False)
+GUI.Form.GsG.SetColumnProperty("GridHead", "PRIORITY", "Visible", False)
+GUI.Form.GsG.SetColumnProperty("GridHead", "TIER_PENDING", "Visible", False)
+GUI.Form.GsG.SetColumnProperty("GridHead", "TYPE_ID", "Visible", False)
+'column width
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQ_APP_ID", "Width", "100")
+GUI.Form.GsG.SetColumnProperty("GridHead", "AMT", "Width", "100")
+GUI.Form.GsG.SetColumnProperty("GridHead", "DIVISION_ID", "Width", "50")
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQ_CREATOR", "Width", "50")
+'alignment
+GUI.Form.GsG.SetColumnProperty("GridHead", "Requisition_NO", "CellHAlignment ", "center")
+GUI.Form.GsG.SetColumnProperty("GridHead", "AMT",  "CellHAlignment ", "center")
+GUI.Form.GsG.SetColumnProperty("GridHead", "DIVISION_ID",  "CellHAlignment ", "center")
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQ_Creator", "CellHAlignment ", "center")
+
+GUI.Form.GsG.SetColumnProperty("GridHead", "Requisition_NO", "HeaderHAlignment ", "center")
+GUI.Form.GsG.SetColumnProperty("GridHead", "AMT",  "HeaderHAlignment ", "center")
+GUI.Form.GsG.SetColumnProperty("GridHead", "DIVISION_ID",  "HeaderHAlignment ", "center")
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQ_Creator", "HeaderHAlignment ", "center")
+'bold
+GUI.Form.GsG.SetColumnProperty("GridHead", "Requisition_NO", "HeaderFontBold", True)
+GUI.Form.GsG.SetColumnProperty("GridHead", "AMT", "HeaderFontBold", True)
+GUI.Form.GsG.SetColumnProperty("GridHead", "Division_ID", "HeaderFontBold", True)
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQ_Creator", "HeaderFontBold", True)
+
+GUI.Form.GsG.SetColumnProperty("GridHead", "AMT", "Caption", "TOTAL AMOUNT")
+GUI.Form.GsG.SetColumnProperty("GridHead", "DIVISION_ID", "Caption", "DIVISION")
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQ_CREATOR", "Caption", "CREATOR")
+GUI.Form.GsG.SetColumnProperty("GridHead", "REQUISITION_NO", "Caption", "REQUISITION #")
+
+Gui.Form.GsG.mainview("GridHead")
+Gui.Form..Visible(True)
+V.Global.iMain.Set(1)
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Populate_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Populate.End
+
+Program.Sub.PopRec.Start
+F.Intrinsic.Control.SetErrorHandler("Populate_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+V.Local.ssqlTier.Declare(String)
+V.Local.ssql.Declare(String)
+V.Local.sReq.Declare(String)
+V.Local.sTier.Declare(String)
+V.Local.sCreator.Declare(String)
+V.Local.fAmt.Declare(String)
+V.Local.sReqPO.Declare(String)
+V.Local.sApproved.Declare(String)
+V.Local.sEmail.Declare(String)
+V.Local.iUserId.Declare(Long)
+V.Local.susername.Declare(String)
+V.local.ssenderemail.Declare(String)
+V.Local.sSubject.Declare(String)
+V.local.sBody.Declare(String)
+V.Local.sGS.Declare(String)
+
+F.Intrinsic.String.Build("Select * from GCG_4145_PO_REQ_PEND Where REQ_APP_ID = '{0}'", V.Args.sReq, V.Local.ssql)
+F.ODBC.Connection!conx.openlocalrecordsetro("rst",V.Local.ssql)
+'F.Intrinsic.String.Build("Select TIER_ID from GCG_4145_TIER_MSTR where MIN_TOTAL_PRICE <= '{0}' And MAX_TOTAL_PRICE >= '{1}' And TIER_ID > '{2}' Order By TIER_ID",V.Args.fAmt,V.Args.fAmt,V.Args.sTier,V.Local.ssqlTier)
+F.Intrinsic.String.Build("Select top 1 A.TIER_ID from GCG_4145_DIV_TIERS A left outer join GCG_4145_TIER_MSTR B on A.TIER_ID = B.TIER_ID where A.DIVISION_ID = '{0}' and A.TYPE_ID = '{1}' and A.TIER_ID > '{2}' order by A.TIER_ID",v.Args.sDivision,v.Args.sType,V.Args.sTier,v.Local.ssqlTier)
+F.ODBC.Connection!conx.openlocalrecordsetro("rstTier",V.Local.ssqlTier)
+Function.Intrinsic.Control.If(V.ODBC.Conx!rstTier.EOF, =, True)'then there are no more tiers and the req is approved send email to creator as approved
+		V.Local.sTier.Set(v.ODBC.Conx!rst.FieldValTrim!TIER_PENDING)
+		V.Local.sCreator.Set(v.ODBC.Conx!rst.FieldValTrim!REQ_CREATOR)
+		V.Local.fAmt.Set(v.ODBC.Conx!rst.FieldValTrim!AMT)
+		V.Local.sReq.Set(v.ODBC.Conx!rst.FieldValTrim!REQUISITION_NO)
+		V.Local.sApproved.Set("Approved")
+		'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		' WRITE THE USERID TO PURCHASE_REQS.USER_APPROVAL AND A Y TO REQ_APPRV_HIS.APPROVE - ADDED BY JTW 2/22/17
+		'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		F.Intrinsic.String.Build("update PURCHASE_REQS set USER_APPROVAL = '{0}' where PO_REQ_NUMBER = '{1}'",V.Caller.User,V.Args.sReqNo,V.Local.ssql)
+		F.ODBC.Connection!Conx.Execute(V.Local.ssql)
+		F.Intrinsic.String.Build("update REQ_APPRV_HIS set APPROVE = 'Y' where NUM = '{0}'",V.Args.sReqNo,V.Local.ssql)
+		F.ODBC.Connection!Conx.Execute(V.Local.ssql)
+		'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		F.Global.Security.GetUserEmail(v.Local.screator.Trim,V.Local.sEmail)
+		'get the user ID
+		F.Global.Security.getuserid(v.Caller.User,v.Caller.CompanyCode,V.Local.iUserId)
+		F.Global.Security.GetFullName(v.Caller.CompanyCode,v.Local.susername)
+		F.Global.Security.getuseremail(v.caller.user,v.local.ssenderemail)
+		'set the subject
+		F.Intrinsic.String.Build("PO Requisition #{0} is {1}",V.Local.sReq,v.Local.sapproved.Trim,v.Local.sSubject)
+		'set the body
+		F.Intrinsic.String.Build("PO Requisition #{0}, Creator: {1}, Total Amount: ${2}, Division: {3}, Tier: {4}",V.Local.sReq,v.Local.sCreator.Trim,v.ODBC.Conx!rst.FieldValTrim!AMT,v.ODBC.Conx!rst.FieldValTrim!DIVISION_ID,V.Local.sTier.Trim,v.Local.sBody)
+		'get the email
+		F.Global.Messaging.queuemessage(v.Caller.CompanyCode,v.Local.iuserid.Trim,v.Caller.Caller,V.Local.sSubject,v.local.ssenderemail.Trim,v.local.semail.Trim,v.local.sbody)		
+		F.ODBC.Conx!rstTier.Close
+		F.ODBC.Conx!rst.Close
+		F.Intrinsic.Control.CallSub(populate)
+		V.Global.iRow.Set(-1)
+Function.Intrinsic.Control.Else
+'create ddl and populate then call show and create change event to continue with adding to table
+	F.Intrinsic.String.Build("Select GS_USER_ID From GCG_4145_DIV_TIERS Where TIER_ID = '{0}' And DIVISION_ID = '{1}' And TYPE_ID = '{2}'", V.ODBC.Conx!rstTier.FieldValTrim!TIER_ID,V.ODBC.Conx!rst.FieldValTrim!DIVISION_ID, V.ODBC.Conx!rst.FieldValTrim!TYPE_ID, V.Local.sGS)
+	F.ODBC.Connection!conx.openlocalrecordsetro("rstGS",V.Local.sGS)
+	V.Global.sNextTier.Set(V.ODBC.Conx!rstTier.FieldValTrim!TIER_ID)
+	GUI.Form2.ddlReceiver.ClearItems
+	Function.Intrinsic.Control.DoUntil(V.ODBC.Conx!rstGS.EOF, =, True)
+		GUI.Form2.ddlReceiver.AddItem(V.ODBC.Conx!rstGS.FieldValTrim!GS_USER_ID)
+		Function.ODBC.Conx!rstGS.MoveNext
+	Function.Intrinsic.Control.Loop
+	GUI.Form2.txt1.Text(V.ODBC.Conx!rst.FieldValTrim!REQUISITION_NO)
+	F.ODBC.Conx!rstTier.Close
+	F.ODBC.Conx!rst.Close
+	F.ODBC.Conx!rstGS.Close
+	'show the form
+	GUI.Form..Enabled(false)
+	GUI.Form2..Show
+Function.Intrinsic.Control.EndIf
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Populate_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.PopRec.End
+
+Program.Sub.CmdSaveRec_Click.Start
+F.Intrinsic.Control.SetErrorHandler("PopRec_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+V.Local.ssql.Declare(String)
+V.Local.sP.Declare(String)
+
+V.Local.sP.Set("P")
+'check ddl not blank
+Function.Intrinsic.Control.If(V.Screen.Form2!ddlReceiver.Text, =, "")
+	F.Intrinsic.UI.Msgbox("Choose the next Tier Receiver")
+	Function.Intrinsic.Control.ExitSub
+Function.Intrinsic.Control.Else
+	'add new record to database
+	F.ODBC.Connection!conx.openlocalrecordsetRW("rst","Select * From GCG_4145_PO_REQ_PEND")
+	F.ODBC.Conx!rst.AddNew
+	F.ODBC.Conx!rst.Set!RECEIVER(V.Screen.Form2!ddlReceiver.Text)
+	F.ODBC.Conx!rst.Set!DIVISION_ID(V.DataTable.Head(V.Global.iRow).DIVISION_ID!FieldValTrim)
+	F.ODBC.Conx!rst.Set!TIER_PENDING(V.Global.sNextTier)
+	F.ODBC.Conx!rst.Set!APPROVED(V.Local.sP)
+	F.ODBC.Conx!rst.Set!REQ_CREATOR(V.DataTable.Head(V.Global.iRow).REQ_CREATOR!FieldValTrim)
+	F.ODBC.Conx!rst.Set!REQUISITION_NO(V.DataTable.Head(V.Global.iRow).REQUISITION_NO!FieldValTrim)
+	F.ODBC.Conx!rst.Set!AMT(V.DataTable.Head(V.Global.iRow).AMT!FieldValTrim)
+	F.ODBC.Conx!rst.Set!TYPE_ID(V.DataTable.Head(V.Global.iRow).TYPE_ID!FieldValTrim)
+	F.ODBC.Conx!rst.Update
+	F.ODBC.Conx!rst.Close
+	V.Global.iRow.Set(-1)
+	F.Intrinsic.Control.CallSub(populate)
+	GUI.Form2..Visible(false)
+	GUI.Form..Enabled(true)
+Function.Intrinsic.Control.EndIf
+
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("PopRec_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_GRID.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.CmdSaveRec_Click.End
+
+Program.Sub.Comments.Start
+${$0$}$GCG_4145_APPR_GRID.g2u$}$DH1$}$10/11/2016 10:12:43 AM$}$False
+Program.Sub.Comments.End
