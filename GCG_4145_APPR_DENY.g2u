@@ -1,0 +1,428 @@
+Program.Sub.ScreenSU.Start
+Gui.Form..Create
+Gui.Form..Size(5130,2640)
+Gui.Form..MinX(0)
+Gui.Form..MinY(0)
+Gui.Form..Position(0,0)
+Gui.Form..BackColor(-2147483633)
+Gui.Form..MousePointer(0)
+Gui.Form..Event(UnLoad,Form_UnLoad)
+Gui.Form..Caption("PO Requisition")
+Gui.Form..Sizeable(False)
+Gui.Form.ddlType.Create(DropDownList)
+Gui.Form.ddlType.Size(1770,330)
+Gui.Form.ddlType.Position(225,585)
+Gui.Form.ddlType.Event(Click,ddlType_Click)
+Gui.Form.lblType.Create(Label,"Type",True,1935,255,0,225,315,True,0,"Arial",8,-986896,0)
+Gui.Form.ddlDivision.Create(DropDownList)
+Gui.Form.ddlDivision.Size(1770,330)
+Gui.Form.ddlDivision.Position(2865,600)
+Gui.Form.ddlDivision.Enabled(True)
+Gui.Form.ddlDivision.Event(Click,ddlDivision_Click)
+Gui.Form.lblDivision.Create(Label,"Division",True,1935,255,0,2835,360,True,0,"Arial",8,-986896,0)
+Gui.Form.cmdSave.Create(Button)
+Gui.Form.cmdSave.Size(1155,540)
+Gui.Form.cmdSave.Position(3270,1260)
+Gui.Form.cmdSave.Caption("Save/Email")
+Gui.Form.cmdSave.Event(Click,cmdSave_Click)
+Gui.Form.cmdSave.Enabled(True)
+Gui.Form.lbl1.Create(Label,"Choose Receiver",True,1935,255,0,135,1215,True,0,"Arial",8,-986896,0)
+Gui.Form.ddlReceiver.Create(DropDownList)
+Gui.Form.ddlReceiver.Enabled(True)
+Gui.Form.ddlReceiver.Size(2370,330)
+Gui.Form.ddlReceiver.Position(180,1425)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+V.Global.famtfinal.Declare(float,0)
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+V.Local.sError.Declare(String)
+
+'This is a PO REQ approval/denial program
+'Coded by: WAW
+'Date: 8/1/2016
+
+'open the conneciton
+F.ODBC.Connection!Conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,1800)
+
+
+
+'check to see if new or edit mode
+f.Intrinsic.Control.If(v.Caller.Hook,=,16240)
+	f.Intrinsic.Control.CallSub(emails)
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_DENY.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.Form_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("Form_UnLoad_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'close the connection
+F.ODBC.Connection!Conx.Close
+
+'end the program
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.Label("Form_UnLoad_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_DENY.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	F.Intrinsic.Control.End
+
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Form_UnLoad.End
+
+Program.Sub.Emails.Start
+F.Intrinsic.Control.SetErrorHandler("Emails_Err")
+F.Intrinsic.Control.ClearErrors
+V.Local.sError.Declare(String)
+
+v.Local.stypefillsql.Declare(string)
+v.Local.sdivfillsql.Declare(string)
+
+f.Intrinsic.String.Build("Select TYPE_NAME from GCG_4145_REQ_TYPE where TYPE_NAME <> '{0}'","",v.Local.stypefillsql)
+F.ODBC.Connection!Conx.openrecordsetro("rsttypefill",V.Local.stypefillsql)
+f.Intrinsic.Control.DoUntil(v.ODBC.Conx!rsttypefill.EOF,=,True)
+	'add the types to the type ddl
+	gui.Form.ddlType.AddItem(v.ODBC.Conx!rsttypefill.FieldValTrim!TYPE_NAME)
+F.ODBC.Conx!rsttypefill.MoveNext
+Function.Intrinsic.Control.Loop
+'close connection
+f.ODBC.Conx!rsttypefill.close
+
+f.Intrinsic.String.Build("Select DIVISION_NAME from GCG_4145_DIVISION where DIVISION_NAME <> '{0}'","",v.Local.sdivfillsql)
+F.ODBC.Connection!Conx.openlocalrecordsetro("rstdivfill",V.Local.sdivfillsql)
+f.Intrinsic.Control.DoUntil(v.ODBC.Conx!rstdivfill.EOF,=,True)
+		'add the types to the type ddl
+	gui.Form.ddlDivision.AddItem(v.ODBC.Conx!rstdivfill.FieldValTrim!DIVISION_NAME)
+F.ODBC.Conx!rstdivfill.MoveNext
+Function.Intrinsic.Control.Loop
+	'close connection
+f.ODBC.Conx!rstdivfill.close
+
+gui.Form..Show
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Emails_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_DENY.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Emails.End
+
+Program.Sub.cmdSave_Click.Start
+F.Intrinsic.Control.SetErrorHandler("Emails_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sporeq.Declare(String)
+v.Local.sdiv.Declare(string)
+v.Local.ssql.Declare(string)
+v.Local.sqty.Declare(string)
+v.Local.famt.Declare(float,0)
+v.Local.fqty.Declare(float,0)
+v.Local.funitprice.Declare(float,0)
+v.Local.supdatesql.Declare(string)
+v.Local.stype.Declare(string)
+v.Local.stier.Declare(string)
+V.Local.sFirstTier.Declare(String)
+V.Local.sP.Declare(String)
+V.Local.sP.Set("P")
+'set the poreq
+v.Local.sporeq.Set(v.Passed.000003)
+
+'first check that all 3 ddls have value
+Function.Intrinsic.Control.If(V.Screen.Form!ddlType.Text, =, "")
+	F.Intrinsic.UI.Msgbox("Missing Type")
+	F.Intrinsic.Control.ExitSub
+Function.Intrinsic.Control.ElseIf(V.Screen.Form!ddlDivision.Text, =, "")
+	F.Intrinsic.UI.Msgbox("Missing Division")
+	F.Intrinsic.Control.ExitSub
+Function.Intrinsic.Control.ElseIf(V.Screen.Form!ddlReceiver.Text, =, "")
+	F.Intrinsic.UI.Msgbox("Missing Receiver")
+	F.Intrinsic.Control.ExitSub
+Function.Intrinsic.Control.EndIf
+
+
+'get the type ID
+f.Intrinsic.String.Build("Select TYPE_ID from GCG_4145_REQ_TYPE where TYPE_NAME = '{0}'",v.Screen.Form!ddlType.Text,v.Local.ssql)
+F.ODBC.Connection!Conx.openlocalrecordsetro("rst",V.Local.ssql)
+f.Intrinsic.Control.If(v.odbc.Conx!rst.EOF,=,False)
+	v.Local.stype.Set(v.ODBC.Conx!rst.FieldValTrim!TYPE_ID)
+f.Intrinsic.Control.EndIf
+f.ODBC.Conx!rst.Close
+
+'get the division ID
+f.Intrinsic.String.Build("Select DIVISION_ID from GCG_4145_DIVISION where DIVISION_NAME = '{0}'",v.Screen.Form!ddlDivision.Text,v.Local.ssql)
+F.ODBC.Connection!Conx.openlocalrecordsetro("rst",V.Local.ssql)
+f.Intrinsic.Control.If(v.odbc.Conx!rst.EOF,=,False)
+	v.Local.sdiv.Set(v.ODBC.Conx!rst.FieldValTrim!DIVISION_ID)
+f.Intrinsic.Control.EndIf
+f.ODBC.Conx!rst.Close
+
+'get the Tier
+'9/16/16 DH: changed the passed variable to V.Global.famtfinal from v.Local.famt
+'9/16/16 DH: More than one tier may exist- created a loop and added tier as part of the where clause in the custom table
+'10/11/16 DH Changed. Needs to only populate to the lowest tier
+
+
+
+'f.Intrinsic.String.Build("Select TIER_ID from GCG_4145_TIER_MSTR where MIN_TOTAL_PRICE <= '{0}' and MAX_TOTAL_PRICE >= '{1}' Order By TIER_ID",V.Global.famtfinal,V.Global.famtfinal,v.Local.ssql)
+F.Intrinsic.String.Build("select TIER_ID from GCG_4145_DIV_TIERS where DIVISION_ID = '{0}' and TYPE_ID = '{1}' and GS_USER_ID = '{2}' order by TIER_ID",V.Local.sdiv,V.Local.stype,V.Screen.Form!ddlReceiver.Text,V.Local.ssql)
+F.ODBC.Connection!Conx.openlocalrecordsetro("rstTier",V.Local.ssql)
+V.Local.stier.Set(V.ODBC.Conx!rstTier.FieldValTrim!TIER_ID)
+F.ODBC.Conx!rstTier.Close
+'''''''''''''''''Need to see if this is in open mode so the process can begin again and existing is overwritten in the table
+
+	'see if there is already a po req in the custom table that matches the po req number
+	f.Intrinsic.String.Build("Select * from GCG_4145_PO_REQ_PEND where REQUISITION_NO = '{0}' And TIER_PENDING = '{1}'",v.Local.sporeq.Trim,V.Local.stier,v.Local.supdatesql)
+	F.ODBC.Connection!Conx.openlocalrecordsetrw("rstupdate",V.Local.supdatesql)
+	f.Intrinsic.Control.If(v.odbc.Conx!rstupdate.EOF,=,True)
+		f.ODBC.Conx!rstupdate.AddNew
+		f.ODBC.Conx!rstupdate.Set!REQUISITION_NO(v.Local.sporeq.Trim)
+		f.ODBC.Conx!rstupdate.Set!REQ_CREATOR(v.Caller.User.Trim)
+		f.ODBC.Conx!rstupdate.Set!AMT(V.Global.famtfinal)
+		f.ODBC.Conx!rstupdate.Set!DIVISION_ID(v.Local.sdiv.Trim)
+		f.ODBC.Conx!rstupdate.Set!TYPE_ID(v.Local.stype.Trim)
+		f.ODBC.Conx!rstupdate.Set!TIER_PENDING(v.Local.stier.Trim)
+		F.ODBC.Conx!rstupdate.Set!RECEIVER(V.Screen.Form!ddlReceiver.Text)
+		F.ODBC.Conx!rstupdate.Set!APPROVED(V.Local.sP)
+		f.ODBC.Conx!rstupdate.Update
+	f.Intrinsic.Control.Else
+		f.ODBC.Conx!rstupdate.Set!AMT(V.Global.famtfinal)
+		f.ODBC.Conx!rstupdate.Set!DIVISION_ID(v.Local.sdiv.Trim)
+		f.ODBC.Conx!rstupdate.Set!TYPE_ID(v.Local.stype.Trim)
+		f.ODBC.Conx!rstupdate.Update
+	f.Intrinsic.Control.EndIf
+	f.ODBC.Conx!rstupdate.Close
+
+	'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	' MAKE SURE PURCHASE_REQS.USER_APPROVAL IS EMPTY - ADDED BY JTW 2/22/17
+	'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	F.Intrinsic.String.Build("update PURCHASE_REQS set USER_APPROVAL = '' where PO_REQ_NUMBER = '{0}'",V.Local.sporeq.Trim,V.Local.ssql)
+	F.ODBC.Connection!Conx.Execute(V.Local.ssql)
+	'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+gui.Form..Visible(0)
+
+F.Intrinsic.Control.CallSub(form_unload)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Emails_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_DENY.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdSave_Click.End
+
+Program.Sub.ddlType_Click.Start
+F.Intrinsic.Control.SetErrorHandler("ddlType_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+'need to clear Reciever if this changes
+gui.Form.ddlReceiver.ClearItems
+'repopulate
+F.Intrinsic.Control.CallSub(populatereciever)
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ddlType_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_DENY.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.ddlType_Click.End
+
+Program.Sub.ddlDivision_Click.Start
+F.Intrinsic.Control.SetErrorHandler("ddlDivision_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+'need to clear Reciever if this changes
+gui.Form.ddlReceiver.ClearItems
+'repopulate
+F.Intrinsic.Control.CallSub(populatereciever)
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("ddlDivision_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_DENY.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.ddlDivision_Click.End
+
+Program.Sub.populateReciever.Start
+F.Intrinsic.Control.SetErrorHandler("populateReciever_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+'this populates the ddlReciever
+
+
+V.Local.ssql.Declare(String)
+V.Local.sporeq.Declare(String)
+v.Local.famt.Declare(float,0)
+v.Local.fqty.Declare(float,0)
+v.Local.funitprice.Declare(float,0)
+V.Local.sFirstTier.Declare(String)
+V.Local.sDivision.Declare(String)
+V.Local.sType.Declare(String)
+V.Local.sTypeId.Declare(String)
+V.Local.sDivisionId.Declare(String)
+
+V.Local.sDivision.Set(V.Screen.Form!ddlDivision.Text)
+V.Local.sType.Set(V.Screen.Form!ddlType.Text)
+'set the poreq
+v.Local.sporeq.Set(v.Passed.000003)
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+'THIS SECTION ADDED TO ONLY RUN IF BOTH VALUES ARE SELECTED
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+'DON'T DO ANYTHING UNTIL DIVISION AND TYPE ARE SET
+F.Intrinsic.Control.If(V.Local.sDivision.Trim,=,"",or,V.Local.sType.Trim,=,"")
+	F.Intrinsic.Control.ExitSub
+F.Intrinsic.Control.EndIf
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+'get the quantity for the purchase requisition
+'since this is a global variable, only set once
+Function.Intrinsic.Control.If(V.Global.famtfinal, =, 0)
+	f.Intrinsic.String.Build("Select QUANTITY, UNIT_PRICE from V_PURCHASE_REQS where PO_REQ_NUMBER = '{0}'",v.Local.sporeq.Trim,v.Local.ssql)
+	F.ODBC.Connection!Conx.openrecordsetro("rst",V.Local.ssql)
+	f.Intrinsic.Control.DoUntil(v.ODBC.Conx!rst.EOF,=,true)
+		f.Intrinsic.Control.If(V.Global.famtfinal.trim,=,0)
+			f.Intrinsic.Math.Mult(v.ODBC.Conx!rst.FieldValTrim!QUANTITY,v.ODBC.Conx!rst.FieldValTrim!UNIT_PRICE,V.Global.famtfinal)
+		f.Intrinsic.Control.Else
+			f.Intrinsic.Math.Mult(v.ODBC.Conx!rst.FieldValTrim!QUANTITY,v.ODBC.Conx!rst.FieldValTrim!UNIT_PRICE,v.Local.famt)
+			f.Intrinsic.Math.Add(V.Global.famtfinal,v.Local.famt,V.Global.famtfinal)
+		f.Intrinsic.Control.EndIf	
+		v.Local.fqty.Set(0)
+		v.Local.funitprice.Set(0)
+		v.Local.famt.Set(0)
+	F.ODBC.Conx!rst.MoveNext
+	Function.Intrinsic.Control.Loop
+	'close connection
+	f.ODBC.Conx!rst.close
+Function.Intrinsic.Control.EndIf
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+'THIS SECTION REPLACED BELOW
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	 'this returns the lowest tier_id and set it to V.Local.sFirstTier
+'	f.Intrinsic.String.Build("Select TIER_ID from GCG_4145_TIER_MSTR where MIN_TOTAL_PRICE <= '{0}' and MAX_TOTAL_PRICE >= '{1}' Order by TIER_ID",V.Global.famtfinal,V.Global.famtfinal,v.Local.ssql)
+'	F.ODBC.Connection!Conx.openlocalrecordsetro("rstTier",V.Local.ssql)
+'	F.Intrinsic.Control.If(v.ODBC.Conx!rstTier.EOF, =, False)
+'		V.Local.sFirstTier.Set(V.ODBC.Conx!rstTier.FieldValTrim!TIER_ID)
+'	Function.Intrinsic.Control.EndIf
+'	F.ODBC.Conx!rstTier.Close
+'		'V.Local.sFirstTier.Set(1)
+'	
+'	'get division id and type id
+'	f.Intrinsic.String.Build("Select DIVISION_ID from GCG_4145_DIVISION where DIVISION_NAME = '{0}'",v.Screen.Form!ddlDivision.Text,v.Local.ssql)
+'	F.ODBC.Connection!Conx.openlocalrecordsetro("rst",V.Local.ssql)
+'	f.Intrinsic.Control.If(v.odbc.Conx!rst.EOF,=,False)
+'		v.Local.sDivisionId.Set(v.ODBC.Conx!rst.FieldValTrim!DIVISION_ID)
+'	f.Intrinsic.Control.EndIf
+'	F.ODBC.Conx!rst.Close
+'	
+'	f.Intrinsic.String.Build("Select TYPE_ID from GCG_4145_REQ_TYPE where TYPE_NAME = '{0}'",v.Screen.Form!ddlType.Text,v.Local.ssql)
+'	F.ODBC.Connection!Conx.openlocalrecordsetro("rst",V.Local.ssql)
+'	f.Intrinsic.Control.If(v.odbc.Conx!rst.EOF,=,False)
+'		V.Local.sTypeId.Set(v.ODBC.Conx!rst.FieldValTrim!TYPE_ID)
+'	f.Intrinsic.Control.EndIf
+'	f.ODBC.Conx!rst.Close
+
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+'ADDED BY JTW 2/7/17
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	'SELECT THE LOWEST TIER TO BE USED FOR THE SELECTED DIVISION AND TYPE
+	F.Intrinsic.String.Build("select A.TIER_ID, A.TYPE_ID, A.DIVISION_ID from GCG_4145_DIV_TIERS A left outer join GCG_4145_TIER_MSTR B on A.TIER_ID = B.TIER_ID left outer join GCG_4145_DIVISION C on A.DIVISION_ID = C.DIVISION_ID left outer join GCG_4145_REQ_TYPE D on A.TYPE_ID = D.TYPE_ID where C.DIVISION_NAME = '{0}' and D.TYPE_NAME = '{1}' and B.MIN_TOTAL_PRICE <= '{2}' order by B.MAX_TOTAL_PRICE",V.Local.sDivision,V.Local.sType,V.Global.famtfinal,V.Local.ssql)
+	F.ODBC.Connection!Conx.OpenLocalRecordsetRO("rstSel",V.Local.ssql)
+	F.Intrinsic.Control.If(V.ODBC.Conx!rstSel.EOF,=,False)
+		V.Local.sFirstTier.Set(V.ODBC.Conx!rstSel.FieldValTrim!TIER_ID)
+		V.Local.sDivisionId.Set(V.ODBC.Conx!rstSel.FieldValTrim!DIVISION_ID)
+		V.Local.sTypeId.Set(V.ODBC.Conx!rstSel.FieldValTrim!TYPE_ID)
+	F.Intrinsic.Control.EndIf
+	F.ODBC.Conx!rstSel.Close
+'~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	' build ddlReciever based on type division and Tier
+	Function.Intrinsic.Control.If(v.Local.sDivisionId, =, "")
+		F.Intrinsic.Control.ExitSub
+	Function.Intrinsic.Control.EndIf
+	F.Intrinsic.Control.If(V.Local.sTypeId, =, "")
+		F.Intrinsic.Control.ExitSub
+	Function.Intrinsic.Control.EndIf
+	F.Intrinsic.String.Build("Select GS_USER_ID From GCG_4145_DIV_TIERS Where Division_ID = '{0}' And TYPE_ID = '{1}' And TIER_ID = '{2}'", V.Local.sDivisionId, V.Local.sTypeId, V.Local.sFirstTier, V.Local.ssql)
+	F.ODBC.Connection!Conx.openlocalrecordsetro("rst",V.Local.ssql)
+	Function.Intrinsic.Control.DoUntil(V.ODBC.Conx!rst.EOF,=,True)
+		gui.Form.ddlReceiver.additem(V.ODBC.Conx!rst.FieldValTrim!GS_USER_ID)
+		F.ODBC.Conx!rst.MoveNext
+	Function.Intrinsic.Control.Loop
+	F.ODBC.Conx!rst.close
+
+
+
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("populateReciever_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPR_DENY.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.populateReciever.End
+
+Program.Sub.Comments.Start
+${$0$}$$}$WAW$}$8/1/2016 11:43:18 AM$}$False
+Program.Sub.Comments.End
