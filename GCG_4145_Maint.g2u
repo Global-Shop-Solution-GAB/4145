@@ -1,0 +1,855 @@
+Program.Sub.ScreenSU.Start
+Gui.Form..Create
+Gui.Form..Size(5895,4560)
+Gui.Form..MinX(0)
+Gui.Form..MinY(0)
+Gui.Form..Position(0,0)
+Gui.Form..BackColor(-2147483633)
+Gui.Form..MousePointer(0)
+Gui.Form..Sizeable(True)
+Gui.Form..Event(UnLoad,Form_UnLoad)
+Gui.Form..Caption("Maintenance")
+Gui.Form.tab1.Create(Tab)
+Gui.Form.tab1.Size(5355,3660)
+Gui.Form.tab1.Position(195,165)
+Gui.Form.tab1.Tabs(3)
+Gui.Form.tab1.SetTab(0)
+Gui.Form.tab1.Caption("Division")
+Gui.Form.tab1.SetTab(1)
+Gui.Form.tab1.Caption("Tier")
+Gui.Form.tab1.SetTab(2)
+Gui.Form.tab1.Caption("Division/Tier/User")
+Gui.Form.txtDivID.Create(TextBox,"",True,1215,300,0,210,600,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txtDivID.Parent("tab1",0)
+Gui.Form.cmdDivIDBrowse.Create(Button)
+Gui.Form.cmdDivIDBrowse.Size(405,375)
+Gui.Form.cmdDivIDBrowse.Position(1515,570)
+Gui.Form.cmdDivIDBrowse.Parent("tab1",0)
+Gui.Form.cmdDivIDBrowse.Caption("^")
+Gui.Form.cmdDivIDBrowse.Event(Click,cmdDivIDBrowse_Click)
+Gui.Form.txtDivDesc.Create(TextBox,"",True,2625,300,0,2220,600,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txtDivDesc.Parent("tab1",0)
+Gui.Form.lblDivID.Create(Label,"Division ID",True,1935,255,0,195,360,True,0,"Arial",8,-986896,0)
+Gui.Form.lblDivID.Parent("tab1",0)
+Gui.Form.lblDivDesc.Create(Label,"Division Description",True,1935,255,0,2235,360,True,0,"Arial",8,-986896,0)
+Gui.Form.lblDivDesc.Parent("tab1",0)
+Gui.Form.cmdDivdelete.Create(Button)
+Gui.Form.cmdDivdelete.Size(855,375)
+Gui.Form.cmdDivdelete.Position(1305,2520)
+Gui.Form.cmdDivdelete.Parent("tab1",0)
+Gui.Form.cmdDivdelete.Caption("Delete")
+Gui.Form.cmdDivdelete.Event(Click,cmddivdelete_Click)
+Gui.Form.cmdTierBrowse.Create(Button)
+Gui.Form.cmdTierBrowse.Size(405,375)
+Gui.Form.cmdTierBrowse.Position(1545,555)
+Gui.Form.cmdTierBrowse.Parent("tab1",1)
+Gui.Form.cmdTierBrowse.Caption("^")
+Gui.Form.cmdTierBrowse.Event(Click,cmdTierBrowse_Click)
+Gui.Form.txtTier.Create(TextBox,"",True,1215,300,0,210,615,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txtTier.Parent("tab1",1)
+Gui.Form.txtMin.Create(TextBox,"",True,1215,300,0,255,1455,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txtMin.Parent("tab1",1)
+Gui.Form.txtMax.Create(TextBox,"",True,1215,300,0,2025,1440,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txtMax.Parent("tab1",1)
+Gui.Form.lblTier.Create(Label,"Tier",True,930,255,0,195,360,True,0,"Arial",8,-986896,0)
+Gui.Form.lblTier.Parent("tab1",1)
+Gui.Form.lblMinPrice1.Create(Label,"Min. Total Price",True,1425,330,0,225,1155,True,0,"Arial",8,-986896,0)
+Gui.Form.lblMinPrice1.Parent("tab1",1)
+Gui.Form.lblMaxPrice.Create(Label,"Max. Total Price",True,1935,255,0,1980,1200,True,0,"Arial",8,-986896,0)
+Gui.Form.lblMaxPrice.Parent("tab1",1)
+Gui.Form.cmdDivSave.Create(Button)
+Gui.Form.cmdDivSave.Size(855,375)
+Gui.Form.cmdDivSave.Position(180,2505)
+Gui.Form.cmdDivSave.Parent("tab1",0)
+Gui.Form.cmdDivSave.Caption("Save")
+Gui.Form.cmdDivSave.Event(Click,cmdDivSave_Click)
+Gui.Form.cmdTierSave.Create(Button)
+Gui.Form.cmdTierSave.Size(855,375)
+Gui.Form.cmdTierSave.Position(180,2505)
+Gui.Form.cmdTierSave.Parent("tab1",1)
+Gui.Form.cmdTierSave.Caption("Save")
+Gui.Form.cmdTierSave.Event(Click,cmdTierSave_Click)
+Gui.Form.cmdTierDelete.Create(Button)
+Gui.Form.cmdTierDelete.Size(855,375)
+Gui.Form.cmdTierDelete.Position(1305,2520)
+Gui.Form.cmdTierDelete.Parent("tab1",1)
+Gui.Form.cmdTierDelete.Caption("Delete")
+Gui.Form.cmdTierDelete.Event(Click,cmdTierDelete_Click)
+Gui.Form.txt3Div.Create(TextBox,"",True,1215,300,0,210,600,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txt3Div.Parent("tab1",2)
+Gui.Form.cmd3DivBrowse.Create(Button)
+Gui.Form.cmd3DivBrowse.Size(405,375)
+Gui.Form.cmd3DivBrowse.Position(1560,555)
+Gui.Form.cmd3DivBrowse.Parent("tab1",2)
+Gui.Form.cmd3DivBrowse.Caption("^")
+Gui.Form.cmd3DivBrowse.Event(Click,cmd3DivBrowse_Click)
+Gui.Form.lbl3Div.Create(Label,"Division ID",True,1935,255,0,195,360,True,0,"Arial",8,-986896,0)
+Gui.Form.lbl3Div.Parent("tab1",2)
+Gui.Form.txt3Tier.Create(TextBox,"",True,1215,300,0,2370,615,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txt3Tier.Parent("tab1",2)
+Gui.Form.lbl3Tier.Create(Label,"Tier ",True,1935,255,0,2370,330,True,0,"Arial",8,-986896,0)
+Gui.Form.lbl3Tier.Parent("tab1",2)
+Gui.Form.cmd3TierBrowse.Create(Button)
+Gui.Form.cmd3TierBrowse.Size(405,375)
+Gui.Form.cmd3TierBrowse.Position(3705,585)
+Gui.Form.cmd3TierBrowse.Parent("tab1",2)
+Gui.Form.cmd3TierBrowse.Caption("^")
+Gui.Form.cmd3TierBrowse.Event(Click,cmd3TierBrowse_Click)
+Gui.Form.txt3GSUser.Create(TextBox,"",True,1215,300,0,210,1410,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txt3GSUser.Parent("tab1",2)
+Gui.Form.cmd3UserBrowse.Create(Button)
+Gui.Form.cmd3UserBrowse.Size(405,375)
+Gui.Form.cmd3UserBrowse.Position(1545,1365)
+Gui.Form.cmd3UserBrowse.Parent("tab1",2)
+Gui.Form.cmd3UserBrowse.Caption("^")
+Gui.Form.cmd3UserBrowse.Event(Click,cmd3UserBrowse_Click)
+Gui.Form.lbl3GSUser.Create(Label,"GS User",True,1935,255,0,195,1155,True,0,"Arial",8,-986896,0)
+Gui.Form.lbl3GSUser.Parent("tab1",2)
+Gui.Form.cmd3Save.Create(Button)
+Gui.Form.cmd3Save.Size(855,375)
+Gui.Form.cmd3Save.Position(180,2505)
+Gui.Form.cmd3Save.Parent("tab1",2)
+Gui.Form.cmd3Save.Caption("Save")
+Gui.Form.cmd3Save.Event(Click,cmd3Save_Click)
+Gui.Form.cmd3Delete.Create(Button)
+Gui.Form.cmd3Delete.Size(855,375)
+Gui.Form.cmd3Delete.Position(1305,2520)
+Gui.Form.cmd3Delete.Parent("tab1",2)
+Gui.Form.cmd3Delete.Caption("Delete")
+Gui.Form.cmd3Delete.Event(Click,cmd3Delete_Click)
+Gui.Form.lbl3Type.Create(Label,"Type",True,1935,255,0,2355,1170,True,0,"Arial",8,-986896,0)
+Gui.Form.lbl3Type.Parent("tab1",2)
+Gui.Form.txt3Type.Create(TextBox,"",True,1215,300,0,2370,1410,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txt3Type.Parent("tab1",2)
+Gui.Form.cmd3TypeBrowse.Create(Button)
+Gui.Form.cmd3TypeBrowse.Size(405,375)
+Gui.Form.cmd3TypeBrowse.Position(3720,1365)
+Gui.Form.cmd3TypeBrowse.Parent("tab1",2)
+Gui.Form.cmd3TypeBrowse.Caption("^")
+Gui.Form.cmd3TypeBrowse.Event(Click,cmd3TypeBrowse_Click)
+Gui.Form.txt3TypeName.Create(TextBox,"",True,1710,300,0,2400,2145,True,0,"Arial",8,-2147483643,1)
+Gui.Form.txt3TypeName.Parent("tab1",2)
+Gui.Form.lbl3TypeName.Create(Label,"Type Name",True,1935,255,0,2370,1890,True,0,"Arial",8,-986896,0)
+Gui.Form.lbl3TypeName.Parent("tab1",2)
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'This is the maintenance portion of a multi-tier PO requisition process to control purchasing. It will have two workflows to provide the structure for their requisition process.
+'Coded by: WAW
+'Date: 8/1/2016
+
+
+'open the conneciton
+F.ODBC.Connection!Conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,1800)
+
+'f.Intrinsic.Control.If(v.Caller.
+
+'set the first tab
+gui.Form.tab1.SetTab(0)
+
+'display the form
+gui.Form..Visible(true)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.Form_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'close the form
+gui.Form..Visible(false)
+
+'close the connection
+F.ODBC.Connection!conx.Close
+
+'end the program
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End
+
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Form_UnLoad.End
+
+Program.Sub.cmdDivIDBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iwidths.Declare(long)
+v.Local.stitles.Declare(string)
+v.Local.sret.Declare(string)
+
+'set type ahead
+f.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+'set the columns/witdths
+v.Local.stitles.Set("Division ID*!*Division Description")
+f.Intrinsic.String.Split(v.Local.stitles,"*!*",v.Local.stitles)
+'v.Local.iwidths.Set("2000*!*2000")
+f.Intrinsic.String.Split("2000*!*2000","*!*",v.Local.iwidths)
+f.Intrinsic.UI.Browser("Select a Division","conx","select DIVISION_ID, DIVISION_NAME from GCG_4145_DIVISION",v.Local.stitles,v.Local.iwidths,v.Local.sret)
+'see if no return
+f.Intrinsic.Control.If(v.Local.sret,=,"***CANCEL***")
+	f.Intrinsic.UI.Msgbox("No division selected")
+f.Intrinsic.Control.Else
+	f.Intrinsic.String.Split(v.Local.sret,"*!*",v.Local.sret)
+	'set the values on the screen
+	gui.Form.txtDivID.Text(v.Local.sret(0))
+	gui.Form.txtDivDesc.Text(v.Local.sret(1))
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdDivIDBrowse_Click.End
+
+Program.Sub.cmdDivdelete_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdDivIDBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sdivid.Declare(string)
+v.Local.sdivdesc.Declare(string)
+v.Local.ssql.Declare(string)
+
+v.Local.sdivid.Set(v.Screen.Form!txtDivID.Text)
+v.Local.sdivdesc.Set(v.Screen.Form!txtDivDesc.Text)
+
+'delete from table
+f.Intrinsic.String.Build("DELETE FROM GCG_4145_DIVISION where DIVISION_ID = '{0}' and DIVISION_NAME = '{1}'",v.Local.sdivid.Trim,v.Local.sdivdesc.Trim,v.Local.ssql)
+f.ODBC.Connection!Conx.Execute(v.Local.ssql)
+
+'clear the textboxes
+gui.Form.txtDivDesc.Text("")
+gui.Form.txtDivID.Text("")
+
+f.Intrinsic.UI.Msgbox("Division information deleted")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdDivIDBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdDivdelete_Click.End
+
+Program.Sub.cmdDivSave_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdDivdelete_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sdivid.Declare(string)
+v.Local.sdivdesc.Declare(string)
+v.Local.ssql.Declare(string)
+
+v.Local.sdivid.Set(v.Screen.Form!txtDivID.Text)
+v.Local.sdivdesc.Set(v.Screen.Form!txtDivDesc.Text)
+
+'check to see if there is already data for that division
+F.Intrinsic.String.Build("Select * from GCG_4145_DIVISION where DIVISION_ID = '{0}'",V.Local.sdivid.Trim,V.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetrw("rst",V.Local.ssql)
+F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,True)
+	F.ODBC.conx!rst.AddNew
+	F.ODBC.conx!rst.Set!DIVISION_ID(V.Local.sdivid.Trim)
+	F.ODBC.conx!rst.Set!DIVISION_NAME(V.Local.sdivdesc.Trim)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.Else
+	F.ODBC.conx!rst.Set!DIVISION_NAME(v.Screen.Form!txtDivDesc.Text)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.EndIf
+
+f.ODBC.Conx!rst.Close
+
+'clear the textboxes
+gui.Form.txtDivDesc.Text("")
+gui.Form.txtDivID.Text("")
+
+f.Intrinsic.UI.Msgbox("Division information saved")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdDivdelete_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdDivSave_Click.End
+
+Program.Sub.cmdTierBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdDivSave_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iwidths.Declare(long)
+v.Local.stitles.Declare(string)
+v.Local.sret.Declare(string)
+
+'set type ahead
+f.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+'set the columns/witdths
+v.Local.stitles.Set("Tier ID*!*Minimum Total Price*!*Maximum Total Price")
+f.Intrinsic.String.Split(v.Local.stitles,"*!*",v.Local.stitles)
+'v.Local.iwidths.Set("2000*!*2000")
+f.Intrinsic.String.Split("2000*!*2000*!*2000","*!*",v.Local.iwidths)
+f.Intrinsic.UI.Browser("Select a Tier","conx","select TIER_ID, MIN_TOTAL_PRICE, MAX_TOTAL_PRICE from GCG_4145_TIER_MSTR",v.Local.stitles,v.Local.iwidths,v.Local.sret)
+'see if no return
+f.Intrinsic.Control.If(v.Local.sret,=,"***CANCEL***")
+	f.Intrinsic.UI.Msgbox("No tier selected")
+f.Intrinsic.Control.Else
+	f.Intrinsic.String.Split(v.Local.sret,"*!*",v.Local.sret)
+	'set the values on the screen
+	gui.Form.txtTier.Text(v.Local.sret(0))
+	gui.Form.txtMin.Text(v.Local.sret(1))
+	gui.Form.txtMax.Text(v.Local.sret(2))
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdDivSave_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdTierBrowse_Click.End
+
+Program.Sub.cmdTierDelete_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdTierBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sTier.Declare(string)
+v.Local.ssql.Declare(String)
+
+v.Local.sTier.Set(v.Screen.Form!txtTier.Text)
+
+'delete from table
+f.Intrinsic.String.Build("DELETE FROM GCG_4145_TIER_MSTR where TIER_ID = '{0}'",v.Local.sTier.Trim,v.Local.ssql)
+f.ODBC.Connection!Conx.Execute(v.Local.ssql)
+
+'clear the textboxes
+gui.Form.txtTier.Text("")
+gui.Form.txtMax.Text("")
+gui.Form.txtMin.Text("")
+
+f.Intrinsic.UI.Msgbox("Tier information deleted")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdTierBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdTierDelete_Click.End
+
+Program.Sub.cmdTierSave_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdDivSave_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.stierid.Declare(string)
+v.Local.smin.Declare(string)
+v.Local.smax.Declare(string)
+v.Local.ssql.Declare(string)
+
+v.Local.stierid.Set(v.Screen.Form!txtTier.Text)
+v.Local.smin.Set(v.Screen.Form!txtMin.Text)
+v.Local.smax.Set(v.Screen.Form!txtMax.Text)
+
+'check to see if there is already data for that tier
+F.Intrinsic.String.Build("Select * from GCG_4145_TIER_MSTR where TIER_ID = '{0}'",V.Local.stierid.Trim,V.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetrw("rst",V.Local.ssql)
+F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,True)
+	F.ODBC.conx!rst.AddNew
+	F.ODBC.conx!rst.Set!TIER_ID(V.Local.stierid.Trim)
+	F.ODBC.conx!rst.Set!MAX_TOTAL_PRICE(V.Local.smax.Trim)
+	f.ODBC.Conx!rst.Set!MIN_TOTAL_PRICE(v.Local.smin.Trim)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.Else
+	F.ODBC.conx!rst.Set!MAX_TOTAL_PRICE(V.Local.smax.Trim)
+	f.ODBC.Conx!rst.Set!MIN_TOTAL_PRICE(v.Local.smin.Trim)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.EndIf
+
+f.ODBC.Conx!rst.Close
+
+'clear the textboxes
+gui.Form.txtTier.Text("")
+gui.Form.txtMax.Text("")
+gui.Form.txtMin.text("")
+
+f.Intrinsic.UI.Msgbox("Tier information saved")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdDivSave_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdTierSave_Click.End
+
+Program.Sub.cmd3DivBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdTierSave_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+v.Local.iwidths.Declare(long)
+v.Local.stitles.Declare(string)
+v.Local.sret.Declare(string)
+
+'set type ahead
+f.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+'set the columns/witdths
+v.Local.stitles.Set("Division ID*!*Division Description")
+f.Intrinsic.String.Split(v.Local.stitles,"*!*",v.Local.stitles)
+'v.Local.iwidths.Set("2000*!*2000")
+f.Intrinsic.String.Split("2000*!*2000","*!*",v.Local.iwidths)
+f.Intrinsic.UI.Browser("Select a Division","conx","select DIVISION_ID, DIVISION_NAME from GCG_4145_DIVISION",v.Local.stitles,v.Local.iwidths,v.Local.sret)
+'see if no return
+f.Intrinsic.Control.If(v.Local.sret,=,"***CANCEL***")
+	f.Intrinsic.UI.Msgbox("No division selected")
+f.Intrinsic.Control.Else
+	f.Intrinsic.String.Split(v.Local.sret,"*!*",v.Local.sret)
+	'set the values on the screen
+	gui.Form.txt3Div.Text(v.Local.sret(0))
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdTierSave_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmd3DivBrowse_Click.End
+
+Program.Sub.cmd3UserBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmd3DivBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iwidths.Declare(long)
+v.Local.stitles.Declare(string)
+v.Local.sret.Declare(string)
+
+'set type ahead
+f.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+'set the columns/witdths
+v.Local.stitles.Set("User ID*!*User Name")
+f.Intrinsic.String.Split(v.Local.stitles,"*!*",v.Local.stitles)
+f.Intrinsic.String.Split("2000*!*2000","*!*",v.Local.iwidths)
+f.Intrinsic.UI.Browser("Select a User","conx","select distinct ID, TEXT1 from USER_OPTIONS where TEXT1 <> 'XXX'",v.Local.stitles,v.Local.iwidths,v.Local.sret)
+'see if no return
+f.Intrinsic.Control.If(v.Local.sret,=,"***CANCEL***")
+	f.Intrinsic.UI.Msgbox("No user ID selected")
+f.Intrinsic.Control.Else
+	f.Intrinsic.String.Split(v.Local.sret,"*!*",v.Local.sret)
+	'set the values on the screen
+	gui.Form.txt3GSUser.text(v.Local.sret(0))
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmd3DivBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmd3UserBrowse_Click.End
+
+Program.Sub.cmd3Save_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmd3UserBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.suser.Declare(string)
+v.Local.sdiv.Declare(string)
+v.Local.stier.Declare(string)
+v.Local.ssql.Declare(string)
+v.Local.stypeid.Declare(string)
+v.Local.stypename.Declare(string)
+
+v.Local.suser.Set(v.Screen.Form!txt3GSUser.Text)
+v.Local.sdiv.set(v.Screen.Form!txt3Div.Text)
+v.Local.stier.Set(v.Screen.Form!txt3Tier.Text)
+v.Local.stypeid.Set(v.Screen.Form!txt3Type.text)
+v.Local.stypename.Set(v.Screen.Form!txt3TypeName.Text)
+
+'check to see if there is already data for that tier
+F.Intrinsic.String.Build("Select * from GCG_4145_DIV_TIERS where TIER_ID = '{0}' and DIVISION_ID = '{1}' and GS_USER_ID = '{2}'",V.Local.stier.Trim,v.Local.sdiv.Trim,v.Local.suser.Trim,v.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetrw("rst",V.Local.ssql)
+F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,True)
+	F.ODBC.conx!rst.AddNew
+	F.ODBC.conx!rst.Set!TIER_ID(V.Local.stier.Trim)
+	F.ODBC.conx!rst.Set!DIVISION_ID(V.Local.sdiv.Trim)
+	f.ODBC.Conx!rst.Set!GS_USER_ID(v.Local.suser.Trim)
+	f.ODBC.Conx!rst.Set!TYPE_ID(v.local.stypeid.trim)
+	f.ODBC.Conx!rst.Set!TYPE_NAME(v.Local.stypename.Trim)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.Else
+	F.ODBC.conx!rst.Set!TIER_ID(V.Local.stier.Trim)
+	F.ODBC.conx!rst.Set!DIVISION_ID(V.Local.sdiv.Trim)
+	f.ODBC.Conx!rst.Set!GS_USER_ID(v.Local.suser.Trim)
+	f.ODBC.Conx!rst.Set!TYPE_ID(v.local.stypeid.trim)
+	f.ODBC.Conx!rst.Set!TYPE_NAME(v.Local.stypename.Trim)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.EndIf
+f.ODBC.Conx!rst.Close
+
+
+'10/10/16 coded by DRH. Save the type name and ID to the table: GCG_4145_REQ_TYPE
+F.Intrinsic.String.Build("Select * From GCG_4145_REQ_TYPE Where TYPE_ID = '{0}'",V.Local.stypeid ,V.local.ssql)
+F.ODBC.Connection!conx.openrecordsetrw("rst",V.Local.ssql)
+F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,True)
+	F.ODBC.conx!rst.AddNew
+	F.ODBC.Conx!rst.Set!TYPE_ID(v.local.stypeid.trim)
+	F.ODBC.Conx!rst.Set!TYPE_NAME(v.Local.stypename.Trim)
+	F.ODBC.conx!rst.Update
+	F.Intrinsic.Control.EndIf
+F.ODBC.Conx!rst.Close
+
+'clear the textboxes
+gui.Form.txt3GSUser.Text("")
+gui.Form.txt3Div.Text("")
+gui.Form.txt3Tier.text("")
+gui.Form.txt3Type.Text("")
+gui.Form.txt3TypeName.Text("")
+
+f.Intrinsic.UI.Msgbox("Information saved")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmd3UserBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmd3Save_Click.End
+
+Program.Sub.cmd3Delete_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmd3Save_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.suser.Declare(string)
+v.Local.sdiv.Declare(string)
+v.Local.stier.Declare(string)
+v.Local.ssql.Declare(string)
+v.Local.stype.Declare(string)
+
+v.Local.suser.Set(v.Screen.Form!txt3GSUser.Text)
+v.Local.sdiv.set(v.Screen.Form!txt3Div.Text)
+v.Local.stier.Set(v.Screen.Form!txt3Tier.Text)
+v.Local.stype.Set(v.Screen.Form!txt3Type.text)
+
+'delete from table
+f.Intrinsic.String.Build("DELETE FROM GCG_4145_DIV_TIERS where TIER_ID = '{0}' and DIVISION_ID = '{1}' and GS_USER_ID = '{2}' and TYPE_ID = '{3}'",v.Local.sTier.Trim,v.Local.sdiv.Trim,v.Local.suser.Trim,v.Local.stype.Trim,v.Local.ssql)
+f.ODBC.Connection!Conx.Execute(v.Local.ssql)
+
+'clear the textboxes
+gui.Form.txt3GSUser.Text("")
+gui.Form.txt3Div.Text("")
+gui.Form.txt3Tier.text("")
+gui.Form.txt3Type.Text("")
+gui.Form.txt3TypeName.text("")
+
+f.Intrinsic.UI.Msgbox("Information deleted")
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmd3Save_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmd3Delete_Click.End
+
+Program.Sub.cmd3TierBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmd3UserBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iwidths.Declare(long)
+v.Local.stitles.Declare(string)
+v.Local.sret.Declare(string)
+
+'set type ahead
+f.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+'set the columns/witdths
+v.Local.stitles.Set("Tier ID*!*Minimum Total Price*!*Maximum Total Price")
+f.Intrinsic.String.Split(v.Local.stitles,"*!*",v.Local.stitles)
+'v.Local.iwidths.Set("2000*!*2000")
+f.Intrinsic.String.Split("2000*!*2000*!*2000","*!*",v.Local.iwidths)
+f.Intrinsic.UI.Browser("Select a Tier","conx","select TIER_ID, MIN_TOTAL_PRICE, MAX_TOTAL_PRICE from GCG_4145_TIER_MSTR",v.Local.stitles,v.Local.iwidths,v.Local.sret)
+'see if no return
+f.Intrinsic.Control.If(v.Local.sret,=,"***CANCEL***")
+	f.Intrinsic.UI.Msgbox("No tier selected")
+f.Intrinsic.Control.Else
+	f.Intrinsic.String.Split(v.Local.sret,"*!*",v.Local.sret)
+	'set the values on the screen
+	gui.Form.txt3Tier.Text(v.Local.sret(0))
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmd3UserBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmd3TierBrowse_Click.End
+
+Program.Sub.cmdTypeSave_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmd3DivBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.sType.Declare(string)
+v.Local.sTypeName.Declare(string)
+v.Local.ssql.Declare(string)
+v.Local.ftype.Declare(float)
+
+f.Intrinsic.Control.If(v.Screen.Form!txtType.Text,=,"")
+
+	f.Intrinsic.String.Build("Select MAX(TYPE_ID) as TYPE from GCG_4145_DIV_TIERS where TYPE_ID <> '{0}'","",v.Local.ssql)
+	F.ODBC.Connection!conx.openrecordsetrO("rst",V.Local.ssql)
+	F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,True)	
+		v.Local.sType.Set("1")
+	f.Intrinsic.Control.Else
+		v.Local.ftype.Set(v.ODBC.Conx!rst.FieldValTrim!TYPE)
+		f.Intrinsic.Math.Add(v.Local.ftype,1,v.Local.sType)
+	f.Intrinsic.Control.EndIf
+	f.ODBC.Conx!rst.Close
+f.Intrinsic.Control.Else
+	v.Local.sType.Set(v.Screen.Form!txtType.Text)
+F.Intrinsic.Control.EndIf
+
+'f.ODBC.Conx!rst.Close
+v.Local.sTypeName.set(v.Screen.Form!txtTypeName.Text)
+
+'check to see if there is already data for that tier
+F.Intrinsic.String.Build("Select * from GCG_4145_REQ_TYPE where TYPE_ID = '{0}'",V.Local.sType.Trim,v.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetrw("rst",V.Local.ssql)
+F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,True)
+	F.ODBC.conx!rst.AddNew
+	F.ODBC.conx!rst.Set!TYPE_ID(V.Local.sType.Trim)
+	F.ODBC.conx!rst.Set!TYPE_NAME(V.Local.sTypeName.Trim)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.Else
+	F.ODBC.conx!rst.Set!TYPE_ID(V.Local.sType.Trim)
+	F.ODBC.conx!rst.Set!TYPE_NAME(V.Local.sTypeName.Trim)
+	F.ODBC.conx!rst.Update
+F.Intrinsic.Control.EndIf
+f.ODBC.Conx!rst.Close
+
+'clear the textboxes
+gui.Form.txtType.Text("")
+gui.Form.txtTypeName.Text("")
+
+f.Intrinsic.UI.Msgbox("Type information saved")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmd3DivBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+Program.Sub.cmdTypeSave_Click.End
+
+Program.Sub.cmdTypeDelete_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdTypeSave_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.stype.Declare(string)
+v.Local.stypename.Declare(string)
+v.Local.ssql.Declare(string)
+
+v.Local.stype.Set(v.Screen.Form!txtType.Text)
+v.Local.stypename.Set(v.Screen.Form!txtType.Text)
+
+'delete from table
+f.Intrinsic.String.Build("DELETE FROM GCG_4145_REQ_TYPE where TYPE_ID = '{0}'",v.Local.stype.Trim,v.Local.ssql)
+f.ODBC.Connection!Conx.Execute(v.Local.ssql)
+
+'clear the textboxes
+gui.Form.txtType.Text("")
+gui.Form.txtTypeName.Text("")
+
+f.Intrinsic.UI.Msgbox("Type information deleted")
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdTypeSave_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdTypeDelete_Click.End
+
+Program.Sub.cmdTypeBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdTypeSave_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iwidths.Declare(long)
+v.Local.stitles.Declare(string)
+v.Local.sret.Declare(string)
+
+'set type ahead
+f.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+'set the columns/witdths
+v.Local.stitles.Set("Type*!*Type Name")
+f.Intrinsic.String.Split(v.Local.stitles,"*!*",v.Local.stitles)
+'v.Local.iwidths.Set("2000*!*2000")
+f.Intrinsic.String.Split("2000*!*2000","*!*",v.Local.iwidths)
+f.Intrinsic.UI.Browser("Select a Type","conx","select TYPE_ID, TYPE_NAME from GCG_4145_REQ_TYPE",v.Local.stitles,v.Local.iwidths,v.Local.sret)
+'see if no return
+f.Intrinsic.Control.If(v.Local.sret,=,"***CANCEL***")
+	f.Intrinsic.UI.Msgbox("No type selected")
+f.Intrinsic.Control.Else
+	f.Intrinsic.String.Split(v.Local.sret,"*!*",v.Local.sret)
+	'set the values on the screen
+	gui.Form.txt3Type.Text(v.Local.sret(0))
+	gui.Form.txt3TypeName.Text(v.Local.sret(1))
+f.Intrinsic.Control.EndIf
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdTypeSave_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdTypeBrowse_Click.End
+
+Program.Sub.cmd3TypeBrowse_Click.Start
+F.Intrinsic.Control.SetErrorHandler("cmdTypeBrowse_Click_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.iwidths.Declare(long)
+v.Local.stitles.Declare(string)
+v.Local.sret.Declare(string)
+
+'set type ahead
+f.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+
+'set the columns/witdths
+v.Local.stitles.Set("Type*!*Type Name")
+f.Intrinsic.String.Split(v.Local.stitles,"*!*",v.Local.stitles)
+'v.Local.iwidths.Set("2000*!*2000")
+f.Intrinsic.String.Split("2000*!*2000","*!*",v.Local.iwidths)
+f.Intrinsic.UI.Browser("Select a Type","conx","select TYPE_ID, TYPE_NAME from GCG_4145_REQ_TYPE",v.Local.stitles,v.Local.iwidths,v.Local.sret)
+'see if no return
+f.Intrinsic.Control.If(v.Local.sret,=,"***CANCEL***")
+	f.Intrinsic.UI.Msgbox("No type selected")
+f.Intrinsic.Control.Else
+	f.Intrinsic.String.Split(v.Local.sret,"*!*",v.Local.sret)
+	'set the values on the screen
+	gui.Form.txt3Type.Text(v.Local.sret(0))
+	gui.Form.txt3TypeName.Text(v.Local.sret(1))
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("cmdTypeBrowse_Click_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_Maint.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmd3TypeBrowse_Click.End
+
+Program.Sub.Comments.Start
+${$0$}$$}$WAW$}$8/1/2016 7:57:02 AM$}$False
+${$3$}$0$}$$}$-1$}$-1$}$$}$1/1/1900$}$Original customer was SMS Millcraft.
+
+This is a re-write of the original script due to many inconsistencies with the original.
+Program.Sub.Comments.End
