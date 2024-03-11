@@ -1,0 +1,558 @@
+Program.Sub.ScreenSU.Start
+Gui.Form..Create
+Gui.Form..Size(12690,6420)
+Gui.Form..MinX(0)
+Gui.Form..MinY(0)
+Gui.Form..Position(0,0)
+Gui.Form..BackColor(-2147483633)
+Gui.Form..MousePointer(0)
+Gui.Form..Event(UnLoad,Form_UnLoad)
+Gui.Form..Caption("PO Req Approval")
+Gui.Form..Sizeable(False)
+Gui.Form.gsfg1.Create(GsFlexgrid)
+Gui.Form.gsfg1.Size(12120,4515)
+Gui.Form.gsfg1.Position(195,225)
+Gui.Form.gsfg1.Event(CommandClick,gsfg1_CommandClick)
+Gui.Form.cmdRefresh.Create(Button)
+Gui.Form.cmdRefresh.Size(1320,570)
+Gui.Form.cmdRefresh.Position(285,4965)
+Gui.Form.cmdRefresh.Caption("Refresh")
+Gui.Form.cmdRefresh.Event(Click,cmdRefresh_Click)
+Program.Sub.ScreenSU.End
+
+Variable.Global.sDiv.Declare(String)
+Variable.Global.sTier.Declare(String)
+Variable.Global.sType.Declare(String)
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.ssql.Declare(string)
+v.Local.suser.Declare(string)
+v.Local.sdiv.Declare(string)
+v.Local.stier.Declare(string)
+v.Local.sqtysql.Declare(String)
+v.Local.itest.Declare(long)
+v.Local.sfilename.Declare(string)
+v.Local.bcheck.Declare(boolean)
+v.Local.sporeq.Declare(string)
+
+
+'This is a PO REQ approval program for technip umbilicals.
+'Coded by: WAW
+'Date: 8/1/2016
+
+'hook # 16190
+
+'open the conneciton
+F.ODBC.Connection!Conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass,1800)
+
+V.Local.suser.Set(v.Caller.User)
+
+'get the division and tier for the user
+f.Intrinsic.String.Build("Select TIER_ID, DIVISION_ID, TYPE_ID from GCG_4145_DIV_TIERS where GS_USER_ID = '{0}'",V.Local.suser,v.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetro("rst",V.Local.ssql)
+F.Intrinsic.Control.If(V.ODBC.conx!rst.EOF,=,False)
+	v.Global.sdiv.Set(v.ODBC.Conx!rst.FieldValTrim!DIVISION_ID)
+	v.Global.stier.Set(V.ODBC.Conx!rst.FieldValTrim!TIER_ID)
+	v.Global.stype.Set(v.ODBC.Conx!rst.FieldValTrim!TYPE_ID)
+f.Intrinsic.Control.EndIf
+f.ODBC.Conx!rst.Close
+
+'call the buildstyle sub
+f.Intrinsic.Control.CallSub(buildstyle)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.Form_UnLoad.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'close the form
+gui.Form..Visible(false)
+
+'close the connection
+F.ODBC.Connection!conx.Close
+
+'end the program
+F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.End
+
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Form_UnLoad.End
+
+Program.Sub.buildstyle.Start
+F.Intrinsic.Control.SetErrorHandler("buildstyle_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+V.Local.srow.Declare(String)
+V.Local.scol.Declare(String)
+v.Local.irows.Declare(long)
+v.Local.ic.Declare(long)
+v.Local.icount.Declare(long)
+v.Local.ssql.Declare(string)
+v.Local.istylecount.Declare(long,0)
+v.Local.irowcount.Declare(long,1)
+
+f.Intrinsic.UI.InvokeWaitDialog("Loading Data...")
+
+V.Local.sP.Declare(String)
+V.Local.sP.Set("P")
+V.Local.sDiv.Declare(String)
+V.Local.sTier.Declare(String)
+V.Local.sDiv.Set(1)
+V.Local.sTier.Set(1)
+
+'get the number of rows for the flexgrid
+'f.Intrinsic.String.Build("Select COUNT(REQUISITION_NO) from GCG_4145_PO_REQ_PEND where TIER_PENDING = '{0}' and DIVISION_ID = '{1}' and APPROVED is '{2}'",v.Local.sTier,v.Local.sDiv,V.Local.sP,v.Local.ssql)
+f.Intrinsic.String.Build("Select COUNT(REQUISITION_NO) from GCG_4145_PO_REQ_PEND where TIER_PENDING = '{0}' and DIVISION_ID = '{1}'",v.Local.sTier,v.Local.sDiv,v.Local.ssql)
+
+'f.Intrinsic.String.Build("Select COUNT(REQUISITION_NO) from GCG_4145_PO_REQ_PEND where TIER_PENDING = '{0}' and DIVISION_ID = '{1}' and APPROVED is {2} and TYPE_ID = '{3}'",v.Global.sTier.Trim,v.Global.sdiv.Trim,"NULL",v.Global.sType.Trim,v.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetro("rst",V.Local.ssql)
+f.Intrinsic.Control.If(v.odbc.Conx!rst.EOF,=,False)
+	v.Local.icount.Set(v.ODBC.Conx!rst.FieldValTrim!EXPR_1)
+f.Intrinsic.Control.EndIf
+f.ODBC.Conx!rst.Close
+
+f.Intrinsic.Control.If(v.Local.icount,=,0)
+	f.Intrinsic.UI.CloseWaitDialog
+	F.Intrinsic.UI.Msgbox("There are no Requisitions to see given your division, tier and type.")
+	f.Intrinsic.Control.ExitSub
+f.Intrinsic.Control.EndIf
+
+gui.Form.gsfg1.Cols(9)
+
+f.Intrinsic.Math.Add(v.Local.icount,1,v.Local.icount)
+
+Gui.Form.gsfg1.Rows(V.local.icount)
+Gui.Form.gsfg1.FixedRows(1)
+gui.Form.gsfg1.SetColumnPercentages(".12:.10:.18:.12:.12:.12:.12:.12:.12")
+
+'get the POs that the user has authority to see/approve
+f.Intrinsic.String.Build("Select * from GCG_4145_PO_REQ_PEND where TIER_PENDING = '{0}' and DIVISION_ID = '{1}' and APPROVED is {2}",v.Global.sTier.Trim,v.Global.sdiv.Trim,"NULL",v.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetro("rst",V.Local.ssql)
+f.Intrinsic.Control.DoUntil(v.ODBC.Conx!rst.EOF,=,true)
+
+'	'column Req #
+	gui.Form.gsfg1.BuildStyle(1,0,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,0,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,0,"Fontstyle","Bold",True)
+	
+	'set the value for req#
+	gui.Form.gsfg1.TextMatrix(0,v.local.irowcount,v.odbc.conx!rst.fieldvaltrim!REQUISITION_NO)
+
+	gui.Form.gsfg1.BuildStyle(2,0,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(2,0,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,0,"Fontstyle","Bold",False)
+	'amount
+	gui.Form.gsfg1.BuildStyle(1,1,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,1,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,1,"Fontstyle","Bold",True)
+	
+	'set value of the amt
+	gui.Form.gsfg1.TextMatrix(1,v.local.irowcount,v.odbc.conx!rst.fieldvaltrim!AMT)
+	
+	gui.Form.gsfg1.BuildStyle(2,1,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(2,1,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,1,"Fontstyle","Bold",False)
+
+	'date created
+	gui.Form.gsfg1.BuildStyle(1,2,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,2,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,2,"Fontstyle","Bold",True)
+	
+	'set value of the date created
+	gui.Form.gsfg1.TextMatrix(2,v.local.irowcount,v.odbc.conx!rst.fieldvaltrim!DATE_LAST_ACTION)
+	
+	gui.Form.gsfg1.BuildStyle(2,2,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(2,2,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,2,"Fontstyle","Bold",False)
+	
+	'Priority
+	gui.Form.gsfg1.BuildStyle(1,3,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,3,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,3,"Fontstyle","Bold",True)
+	
+	'set value of the priority
+	gui.Form.gsfg1.TextMatrix(3,v.local.irowcount,v.odbc.conx!rst.fieldvaltrim!PRIORITY)
+	
+	gui.Form.gsfg1.BuildStyle(2,3,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(2,3,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,3,"Fontstyle","Bold",False)
+	
+	'division
+	gui.Form.gsfg1.BuildStyle(1,4,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,4,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,4,"Fontstyle","Bold",True)
+	
+	'set value of the division
+	gui.Form.gsfg1.TextMatrix(4,v.local.irowcount,v.odbc.conx!rst.fieldvaltrim!DIVISION_ID)
+	
+	gui.Form.gsfg1.BuildStyle(2,4,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(2,4,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,4,"Fontstyle","Bold",False)
+	
+	'creator
+	gui.Form.gsfg1.BuildStyle(1,5,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,5,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,5,"Fontstyle","Bold",True)
+	
+	'set value of the creator
+	gui.Form.gsfg1.TextMatrix(5,v.local.irowcount,v.odbc.conx!rst.fieldvaltrim!REQ_CREATOR)
+	
+	gui.Form.gsfg1.BuildStyle(2,5,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(2,5,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,5,"Fontstyle","Bold",False)
+	
+	'approve
+	gui.Form.gsfg1.BuildStyle(1,6,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,6,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,6,"Fontstyle","Bold",True)
+	
+	gui.Form.gsfg1.BuildStyle(2,6,"Type","Command","Approve")
+	gui.Form.gsfg1.BuildStyle(2,6,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,6,"Fontstyle","Bold",False)
+	
+	'deny
+	gui.Form.gsfg1.BuildStyle(1,7,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,7,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,7,"Fontstyle","Bold",True)
+	
+	gui.Form.gsfg1.BuildStyle(2,7,"Type","Command","Deny")
+	gui.Form.gsfg1.BuildStyle(2,7,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,7,"Fontstyle","Bold",False)
+
+	'View
+	gui.Form.gsfg1.BuildStyle(1,8,"Type","Locked",True)
+	gui.Form.gsfg1.BuildStyle(1,8,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(1,8,"Fontstyle","Bold",True)
+	
+	gui.Form.gsfg1.BuildStyle(2,8,"Type","Command","View")
+	gui.Form.gsfg1.BuildStyle(2,8,"Format","Alignment",2)	
+	gui.Form.gsfg1.BuildStyle(2,8,"Fontstyle","Bold",False)
+	
+'	f.Intrinsic.Control.If(v.Local.istylecount,>,0)
+		gui.Form.gsfg1.ApplyStyle(v.Local.istylecount,2)
+'	f.Intrinsic.Control.Else
+'		gui.Form.gsfg1.ApplyStyle(v.Local.istylecount,1)
+'	f.Intrinsic.Control.EndIf
+
+	f.Intrinsic.Math.Add(v.Local.istylecount,1,v.Local.istylecount)
+	f.Intrinsic.Math.Add(v.Local.irowcount,1,v.Local.irowcount)
+	
+	gui.Form.gsfg1.ApplyStyle(v.Local.istylecount,2)
+
+F.ODBC.conx!rst.MoveNext
+Function.Intrinsic.Control.Loop
+'close connection
+f.ODBC.Conx!rst.close
+
+gui.Form.gsfg1.ApplyStyle(0,1)
+
+'set the titles
+Gui.Form.gsfg1.TextMatrix(0,0,"Requisition #")
+Gui.Form.gsfg1.TextMatrix(1,0,"Total Amount")
+Gui.Form.gsfg1.TextMatrix(2,0,"Date Created")
+Gui.Form.gsfg1.TextMatrix(3,0,"Priority")
+Gui.Form.gsfg1.TextMatrix(4,0,"Division")
+Gui.Form.gsfg1.TextMatrix(5,0,"Creator")
+Gui.Form.gsfg1.TextMatrix(6,0,"Approve")
+Gui.Form.gsfg1.TextMatrix(7,0,"Deny")
+gui.Form.gsfg1.TextMatrix(8,0,"View")
+
+'make the grid visible again
+gui.Form..Visible(true)
+gui.Form.gsfg1.Visible(True)
+
+f.Intrinsic.UI.CloseWaitDialog
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("buildstyle_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.buildstyle.End
+
+Program.Sub.gsfg1_CommandClick.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.icolumn.Declare(long)
+
+'see which button was selected for approval
+f.Intrinsic.Control.If(v.Args.column,=,6)
+f.Intrinsic.Control.AndIf(v.Args.key,>,0)
+	f.Intrinsic.Control.callsub(approve,"CURRENTROW",v.Args.key)
+f.Intrinsic.Control.ElseIf(v.Args.column,=,7)
+f.Intrinsic.Control.AndIf(v.Args.key,>,0)
+	f.Intrinsic.Control.CallSub(deny,"CURRENTROW",v.Args.key)
+f.Intrinsic.Control.ElseIf(v.Args.column,=,8)
+f.Intrinsic.Control.AndIf(v.Args.key,>,0)
+	f.Intrinsic.Control.CallSub(view,"CURRENTROW",v.Args.key)
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.gsfg1_CommandClick.End
+
+Program.Sub.Approve.Start
+F.Intrinsic.Control.SetErrorHandler("Approve_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.irow.Declare(long)
+v.Local.sporeq.Declare(string)
+v.Local.ssql.Declare(string)
+v.Local.famt.Declare(float)
+v.Local.stier.Declare(string)
+v.Local.stiersql.Declare(string)
+v.Local.screator.Declare(string)
+v.Local.semail.Declare(string)
+v.Local.ssubject.Declare(string)
+v.Local.sapproved.Declare(string)
+v.Local.sbody.Declare(String)
+v.Local.iuserid.Declare(long)
+v.Local.susername.Declare(string)
+v.Local.ssenderemail.Declare(string)
+
+'get the po req number
+gui.Form.gsfg1.GetTextMatrix(0,v.Args.CURRENTROW,v.Local.sporeq)
+
+'mark the requisition as approved in the table
+f.Intrinsic.String.Build("Select * from GCG_4145_PO_REQ_PEND where REQUISITION_NO = '{0}'",v.Local.sporeq.Trim,v.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetrw("rst",V.Local.ssql)
+f.Intrinsic.Control.If(v.odbc.Conx!rst.EOF,=,False)
+	v.Local.famt.Set(v.ODBC.Conx!rst.FieldValTrim!AMT)
+	v.Local.stier.Set(v.ODBC.Conx!rst.FieldValTrim!TIER_PENDING)
+	f.Intrinsic.String.Build("Select TIER_ID from GCG_4145_TIER_MSTR where MIN_TOTAL_PRICE <= '{0}' and MAX_TOTAL_PRICE >= '{1}' and TIER_ID <> '{2}'",v.Local.famt,v.Local.famt,v.Local.stier.Trim,v.Local.stiersql)
+	F.ODBC.Connection!conx.openrecordsetrw("rsttier",V.Local.stiersql)
+	f.Intrinsic.Control.If(v.odbc.Conx!rsttier.EOF,=,False)
+		f.ODBC.Conx!rst.Set!TIER_PENDING(v.ODBC.Conx!rsttier.FieldValTrim!TIER_ID)
+		v.Local.stiersql.Set(v.ODBC.Conx!rst.FieldValTrim!TIER_PENDING)
+		'set the creator to a local variable to email them letting them know it has been approved
+		v.Local.screator.Set(v.ODBC.Conx!rst.FieldValTrim!REQ_CREATOR)
+		f.Global.Security.GetUserEmail(v.Local.screator.Trim,v.Local.semail)
+		f.Intrinsic.String.Build("awaiting appproval from tier {0}",v.ODBC.Conx!rsttier.FieldValTrim!TIER_ID,v.Local.sapproved)
+	f.Intrinsic.Control.Else
+		'otherwise flag as approved, get he email and set the status as approved
+		f.ODBC.Conx!rst.Set!APPROVED("Y")
+		v.Local.screator.Set(v.ODBC.Conx!rst.FieldValTrim!REQ_CREATOR)
+		f.Global.Security.GetUserEmail(v.Local.screator.Trim,v.Local.semail)
+		v.Local.sapproved.Set("Approved")
+	f.Intrinsic.Control.EndIf
+'	f.ODBC.Conx!rst.Set!APPROVED("Y")
+	f.ODBC.Conx!rst.Set!DENIED("N")
+	f.ODBC.Conx!rst.Update
+f.Intrinsic.Control.EndIf
+
+'get the user ID
+f.Global.Security.getuserid(v.Caller.User,v.Caller.CompanyCode,v.Local.iuserid)
+f.Global.Security.GetFullName(v.Caller.CompanyCode,v.Local.susername)
+f.Global.Security.getuseremail(v.caller.user,v.local.ssenderemail)
+'set the subject
+f.Intrinsic.String.Build("PO Requisition #{0} is {1}",v.Local.sporeq.Trim,v.Local.sapproved.Trim,v.Local.ssubject)
+'set the body
+f.Intrinsic.String.Build("PO Requisition #{0}, Creator: {1}, Total Amount: ${2}, Division: {3}, Tier: {4}",v.Local.sporeq.Trim,v.Local.screator.Trim,v.ODBC.Conx!rst.FieldValTrim!AMT,v.ODBC.Conx!rst.FieldValTrim!DIVISION_ID,v.Local.stier.Trim,v.Local.sbody)
+'get the email
+f.Global.Messaging.queuemessage(v.Caller.CompanyCode,v.Local.iuserid.Trim,v.Caller.Caller,v.Local.ssubject,v.local.ssenderemail.Trim,v.local.semail.Trim,v.local.sbody)
+
+f.ODBC.Conx!rst.Close
+f.ODBC.Conx!rsttier.Close
+
+'set the subject
+f.Intrinsic.String.Build("PO Requisition #{0} is {1}",v.Local.sporeq.Trim,v.Local.sapproved.Trim,v.Local.ssubject)
+
+gui.Form.gsfg1.Visible(False)
+f.Intrinsic.Control.CallSub(buildstyle)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Approve_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Approve.End
+
+Program.Sub.Deny.Start
+F.Intrinsic.Control.SetErrorHandler("Deny_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.irow.Declare(long)
+v.Local.sporeq.Declare(string)
+v.Local.ssql.Declare(string)
+v.Local.stier.Declare(string)
+v.Local.stiersql.Declare(string)
+v.Local.screator.Declare(string)
+v.Local.semail.Declare(string)
+v.Local.ssubject.Declare(string)
+v.Local.sapproved.Declare(string)
+v.Local.sbody.Declare(String)
+v.Local.iuserid.Declare(long)
+v.Local.susername.Declare(string)
+v.Local.ssenderemail.Declare(string)
+v.Local.famt.Declare(float)
+
+
+'get the po req number
+gui.Form.gsfg1.GetTextMatrix(0,v.Args.CURRENTROW,v.Local.sporeq)
+
+'mark the requisition as denied in the table
+f.Intrinsic.String.Build("Select * from GCG_4145_PO_REQ_PEND where REQUISITION_NO = '{0}'",v.Local.sporeq.Trim,v.Local.ssql)
+F.ODBC.Connection!conx.openrecordsetrw("rst",V.Local.ssql)
+f.Intrinsic.Control.If(v.odbc.Conx!rst.EOF,=,False)
+'	f.ODBC.Conx!rst.Set!APPROVED("N")
+	f.ODBC.Conx!rst.Set!DENIED("Y")
+	v.Local.stiersql.Set(v.ODBC.Conx!rst.FieldValTrim!TIER_PENDING)
+	v.Local.screator.Set(v.ODBC.Conx!rst.FieldValTrim!REQ_CREATOR)
+	v.Local.famt.Set(v.ODBC.Conx!rst.FieldValTrim!AMT)
+	v.Local.stier.Set(v.ODBC.Conx!rst.FieldValTrim!TIER_PENDING)
+	f.Global.Security.GetUserEmail(v.Local.screator.Trim,v.Local.semail)
+	v.Local.sapproved.Set("denied")
+	f.ODBC.Conx!rst.Update
+f.Intrinsic.Control.EndIf
+
+'get the user ID
+f.Global.Security.getuserid(v.Caller.User,v.Caller.CompanyCode,v.Local.iuserid)
+f.Global.Security.GetFullName(v.Caller.CompanyCode,v.Local.susername)
+f.Global.Security.getuseremail(v.caller.user,v.local.ssenderemail)
+'set the subject
+f.Intrinsic.String.Build("PO Requisition #{0} is {1}",v.Local.sporeq.Trim,v.Local.sapproved.Trim,v.Local.ssubject)
+'set the body
+f.Intrinsic.String.Build("PO Requisition #{0}, Creator: {1}, Total Amount: ${2}, Division: {3}, Tier: {4}",v.Local.sporeq.Trim,v.Local.screator.Trim,v.ODBC.Conx!rst.FieldValTrim!AMT,v.ODBC.Conx!rst.FieldValTrim!DIVISION_ID,v.Local.stier.Trim,v.Local.sbody)
+'get the email
+f.Global.Messaging.queuemessage(v.Caller.CompanyCode,v.Local.iuserid.Trim,v.Caller.Caller,v.Local.ssubject,v.local.ssenderemail.Trim,v.local.semail.Trim,v.local.sbody)
+f.ODBC.Conx!rst.Close
+'set the subject
+f.Intrinsic.String.Build("PO Requisition #{0} is {1}",v.Local.sporeq.Trim,v.Local.sapproved.Trim,v.Local.ssubject)
+gui.Form.gsfg1.Visible(False)
+f.Intrinsic.Control.CallSub(buildstyle)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Deny_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Deny.End
+
+Program.Sub.View.Start
+F.Intrinsic.Control.SetErrorHandler("View_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+v.Local.irow.Declare(long)
+v.Local.sporeq.Declare(string)
+v.Local.sfilename.Declare(string)
+v.Local.bcheck.Declare(boolean)
+v.Local.ireturn.Declare(long)
+
+'get the po req number
+gui.Form.gsfg1.GetTextMatrix(0,v.Args.CURRENTROW,v.Local.sporeq)
+
+f.Intrinsic.String.Build("{0}\POREQ.TXT",v.Caller.FilesDir,v.Local.sfilename)
+f.Intrinsic.File.Exists(v.Local.sfilename,v.Local.bcheck)
+f.Intrinsic.Control.If(v.Local.bcheck,=,True)
+	F.Intrinsic.File.Deletefile(V.Local.sfilename)
+	F.Intrinsic.File.String2File(V.Local.sfilename,V.Local.sporeq.Trim)
+F.Intrinsic.Control.Else
+	F.Intrinsic.File.String2File(V.Local.sfilename,V.Local.sporeq.Trim)
+F.Intrinsic.Control.EndIf
+
+f.Global.General.LaunchMenuTask(272,0,v.Local.ireturn)
+
+'f.Intrinsic.String.Build({0}{1},v.Local.sporeq.Trim,"!*!",v.Local.sporeq)
+
+''call the po req view screen
+'f.Global.General.CallWrapperSync(3210,v.Local.sporeq.Trim)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("View_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.View.End
+
+Program.Sub.cmdRefresh_Click.Start
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'make the flexgrid invisible
+gui.Form.gsfg1.Visible(false)
+
+f.Intrinsic.Control.CallSub(buildstyle)
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_4145_APPROVAL.g2u",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+	f.Intrinsic.Control.CallSub(form_unload)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.cmdRefresh_Click.End
+
+Program.Sub.Comments.Start
+${$0$}$$}$WAW$}$8/1/2016 1:08:29 PM$}$False
+${$3$}$0$}$$}$-1$}$-1$}$$}$1/1/1900$}$Original customer was SMS Millcraft.
+
+This is a re-write of the original script due to many inconsistencies with the original.
+Program.Sub.Comments.End
